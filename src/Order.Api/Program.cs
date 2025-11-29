@@ -9,7 +9,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IBus, Bus>();
+builder.Services.AddSingleton<IBus, Bus>(sp =>
+{
+    var logger = sp.GetRequiredService<ILogger<Bus>>();
+    var bus = new Bus(builder.Configuration, logger);
+
+    bus.CreateTopicOrQueue([BusConsts.OrderCreatedEventTopicName]);
+    return bus;
+});
+
 builder.Services.AddScoped<IOrderService, OrderService>();
 var app = builder.Build();
 
