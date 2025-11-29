@@ -59,7 +59,7 @@ namespace Order.Api.Services
                     }
                           });
 
-                    _logger.LogInformation($"topic : {topicOrQueueName} oluştu!");
+                    _logger.LogWarning($"topic : {topicOrQueueName} oluştu!");
                 }
 
             }

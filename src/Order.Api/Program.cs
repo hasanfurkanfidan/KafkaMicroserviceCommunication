@@ -9,17 +9,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IBus, Bus>(sp =>
-{
-    var logger = sp.GetRequiredService<ILogger<Bus>>();
-    var bus = new Bus(builder.Configuration, logger);
-
-    bus.CreateTopicOrQueue([BusConsts.OrderCreatedEventTopicName]);
-    return bus;
-});
+builder.Services.AddSingleton<IBus, Bus>();
 
 builder.Services.AddScoped<IOrderService, OrderService>();
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var bus = scope.ServiceProvider.GetRequiredService<IBus>();
+    await bus.CreateTopicOrQueue([BusConsts.OrderCreatedEventTopicName]);
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
